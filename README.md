@@ -31,7 +31,7 @@ moon coder --backend mock --task "Write a Python function"
 ### Option 4: NVIDIA NIM (Cloud Inference)
 1. Get API key from https://build.nvidia.com/
 2. Export: `export NVIDIA_API_KEY=your_key_here`
-3. Run: `moon assistant --backend nvidia-nim --model "meta/llama-3.1-8b-instruct"`
+3. Run: `moon assistant --backend nvidia-nim --model "nvidia/nemotron-3-ultra-550b-a55b"`
 
 ## Project Structure
 
@@ -99,7 +99,7 @@ moon assistant --backend ollama --model llama3.2
 moon assistant --backend ollama --model llama3.2
 
 # Using NVIDIA NIM (cloud)
-moon assistant --backend nvidia-nim --model "meta/llama-3.1-8b-instruct"
+moon assistant --backend nvidia-nim --model "nvidia/nemotron-3-ultra-550b-a55b"
 moon researcher --backend nvidia-nim --task "Explain quantum computing"
 ```
 

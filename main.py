@@ -43,7 +43,7 @@ Examples:
   moon researcher --task "Research the latest developments in quantum computing"
   moon coder --backend ollama --model llama3.2 --task "Create a REST API in FastAPI"
   moon --backend mock --task "Hello, how are you?"
-  moon --backend nvidia-nim --model "meta/llama-3.1-8b-instruct" --task "Explain transformers"
+  moon --backend nvidia-nim --model "nvidia/nemotron-3-ultra-550b-a55b" --task "Explain transformers"
 
 Backends:
   ollama           - Requires Ollama running (ollama serve)

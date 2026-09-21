@@ -24,7 +24,7 @@ class LLMSettings(BaseModel):
     openai_api_key: str = "not-needed"
     nvidia_api_key: str | None = None  # Can also use NVIDIA_API_KEY env var
     nvidia_base_url: str = "https://integrate.api.nvidia.com/v1"
-    nvidia_model: str = "meta/llama-3.1-8b-instruct"
+    nvidia_model: str = "nvidia/nemotron-3-ultra-550b-a55b"
 
 
 class AgentSettings(BaseModel):

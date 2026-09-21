@@ -113,7 +113,7 @@ class NVIDIANIM_LLM(LocalLLM):
 
     def __init__(
         self,
-        model: str = "meta/llama-3.1-8b-instruct",
+        model: str = "nvidia/nemotron-3-ultra-550b-a55b",
         api_key: str = None,
         base_url: str = "https://integrate.api.nvidia.com/v1",
     ):
