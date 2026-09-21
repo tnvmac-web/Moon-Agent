@@ -1,0 +1,47 @@
+name: Installer Test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test-installer:
+    name: Test PowerShell Installer
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install pipx
+        run: pip install --user pipx
+
+      - name: Run PowerShell installer
+        shell: powershell
+        run: |
+          Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
+          & "$env:GITHUB_WORKSPACE\install.ps1"
+
+      - name: Verify moon command
+        shell: powershell
+        run: |
+          moon --help
+          moon assistant --backend mock --task "hello"
+
+      - name: Test NVIDIA NIM backend (if key provided)
+        shell: powershell
+        env:
+          NVIDIA_API_KEY: ${{ secrets.NVIDIA_API_KEY }}
+        run: |
+          if ($env:NVIDIA_API_KEY) {
+            moon assistant --backend nvidia-nim --task "Say hello in 3 words."
+          } else {
+            Write-Host "NVIDIA_API_KEY not set, skipping NIM test"
+          }
