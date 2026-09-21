@@ -190,13 +190,13 @@ def main():
         llm = create_llm("mock")
 
     # Create agent
-    print(f"🤖 Creating {args.command} agent...")
+    print(f"[BOT] Creating {args.command} agent...")
     agent = create_agent(args.command, llm)
     print(f"[OK] Agent ready: {agent.config.name}")
 
     # Run task or interactive
     if args.task:
-        print(f"\n📋 Task: {args.task}\n")
+        print(f"\n[TASK] {args.task}\n")
         print("Agent: ", end="", flush=True)
         response = agent.run(args.task)
         print(response)
