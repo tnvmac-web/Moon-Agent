@@ -46,6 +46,11 @@ if ($nvKey) { $env:NVIDIA_API_KEY = $nvKey }
 $test = moon assistant --backend mock --task "hello" 2>&1
 if ($test -match "Mock response") {
     Write-Host "Moon installed successfully at $InstallDir" -ForegroundColor Green
+    # Create global wrapper
+    $wrapperBat = "$env:LOCALAPPDATA\bin\moon.bat"
+    if (-not (Test-Path (Split-Path $wrapperBat))) { New-Item -ItemType Directory -Path (Split-Path $wrapperBat) -Force | Out-Null }
+    "@echo off`n`"$env:LOCALAPPDATA\hermes\hermes-agent\venv\Scripts\moon.exe`" %*" | Out-File -Encoding ascii $wrapperBat
+    Write-Host "Added moon.bat to $env:LOCALAPPDATA\bin" -ForegroundColor Green
     Write-Host "`nUsage:" -ForegroundColor Yellow
     Write-Host "  moon assistant --backend nvidia-nim --task `<your task`>"
     Write-Host "  moon researcher --backend nvidia-nim --task `<task`>"
