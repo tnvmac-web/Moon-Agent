@@ -153,6 +153,7 @@ jobs:
       - name: Get version
         id: version
         run: |
+          python -m pip install toml
           VERSION=$(python -c "import toml; print(toml.load('pyproject.toml')['project']['version'])")
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
