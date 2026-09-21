@@ -16,10 +16,10 @@ from models.local_llm import create_llm
 
 def print_banner():
     print("""
-╔══════════════════════════════════════════════════════════════╗
-║                      MOON AI AGENT                            ║
-║              Run AI agents locally on any device              ║
-╚══════════════════════════════════════════════════════════════╝
++----------------------------------------------------------+
+|                    MOON AI AGENT                            |
+|              Run AI agents locally on any device              |
++----------------------------------------------------------+
 """)
 
 
@@ -127,7 +127,7 @@ def run_setup():
     import yaml
     with open("config.yaml", "w") as f:
         yaml.dump(config, f, default_flow_style=False, sort_keys=False)
-    print(f"\n✅ Saved config.yaml")
+    print(f"\n[OK] Saved config.yaml")
 
     # 6. Save .env
     if env_lines:
@@ -135,7 +135,7 @@ def run_setup():
             f.write("\n")
             for line in env_lines:
                 f.write(line + "\n")
-        print(f"✅ Saved .env")
+        print(f"[OK] Saved .env")
 
     print("\n=== Setup Complete ===")
     print(f"  Backend: {backend}")
@@ -183,16 +183,16 @@ def main():
 
     try:
         llm = create_llm(args.backend, **llm_kwargs)
-        print(f"✅ LLM ready: {type(llm).__name__}")
+        print(f"[OK] LLM ready: {type(llm).__name__}")
     except Exception as e:
-        print(f"❌ Failed to initialize LLM: {e}")
+        print(f"[FAIL] Failed to initialize LLM: {e}")
         print("Falling back to mock mode...")
         llm = create_llm("mock")
 
     # Create agent
     print(f"🤖 Creating {args.command} agent...")
     agent = create_agent(args.command, llm)
-    print(f"✅ Agent ready: {agent.config.name}")
+    print(f"[OK] Agent ready: {agent.config.name}")
 
     # Run task or interactive
     if args.task:
