@@ -1,0 +1,47 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "moon-ai-agent"
+version = "1.0.0"
+description = "Moon AI Agent - Run AI agents locally on any device"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "pydantic>=2.0",
+    "pydantic-settings>=2.0",
+    "pyyaml>=6.0",
+    "requests>=2.31",
+    "fastapi>=0.100",
+    "uvicorn[standard]>=0.23",
+    "websockets>=11.0",
+    "pywebview>=4.0",
+    "textual>=0.44",
+    "rich>=13.0",
+    "aiosqlite>=0.19",
+    "sentence-transformers>=2.2",
+    "importlib-metadata>=6.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "black>=23.0",
+    "ruff>=0.1.0",
+]
+
+[project.scripts]
+moon = "main:main"
+moon-tui = "terminal.tui:run_tui"
+moon-web = "web.server:run_server"
+moon-desktop = "desktop.app:create_desktop_app"
+moon-cli = "main:main"
+moon-demo = "demo:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["*"]
+
+[tool.setuptools.package-dir]
+"" = "."

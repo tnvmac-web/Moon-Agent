@@ -1,0 +1,7 @@
+[console_scripts]
+moon = main:main
+moon-cli = main:main
+moon-demo = demo:main
+moon-desktop = desktop.app:create_desktop_app
+moon-tui = terminal.tui:run_tui
+moon-web = web.server:run_server

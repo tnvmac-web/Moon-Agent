@@ -1,0 +1,30 @@
+# Core dependencies
+pydantic>=2.0
+pydantic-settings>=2.0
+pyyaml>=6.0
+
+# LLM backends
+requests>=2.31
+
+# Web server
+fastapi>=0.100
+uvicorn[standard]>=0.23
+websockets>=11.0
+
+# Desktop app
+pywebview>=4.0
+
+# Terminal TUI
+textual>=0.44
+rich>=13.0
+
+# Memory
+aiosqlite>=0.19
+sentence-transformers>=2.2
+
+# Skills/plugins
+importlib-metadata>=6.0
+
+# Optional: for local models
+# llama-cpp-python>=0.2.0
+# ollama>=0.1.0

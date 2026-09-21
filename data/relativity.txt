@@ -1,0 +1,7 @@
+The theory of relativity, developed by Albert Einstein, fundamentally changed our understanding of space, time, and gravity. It consists of two parts: special relativity and general relativity.
+
+Special relativity, published in 1905, deals with objects moving at constant speeds, particularly those approaching the speed of light. It introduced the famous equation E=mc², showing that mass and energy are interchangeable. Key concepts include time dilation (moving clocks run slower) and length contraction (moving objects shorten in the direction of motion).
+
+General relativity, published in 1915, extends these ideas to include gravity. It describes gravity not as a force, but as the curvature of spacetime caused by mass and energy. Massive objects like planets and stars warp the fabric of spacetime, and this curvature tells other objects how to move. This theory has been confirmed by numerous experiments, including the bending of light around the sun and the precise orbit of Mercury.
+
+Both theories have practical applications today, from GPS satellites (which must account for both special and general relativistic effects) to our understanding of black holes and the expansion of the universe.

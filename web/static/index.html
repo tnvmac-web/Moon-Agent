@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moon AI Agent</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #1a1a2e; color: #eee; height: 100vh; display: flex; flex-direction: column; }
+        header { background: #16213e; padding: 1rem 2rem; border-bottom: 1px solid #0f3460; display: flex; justify-content: space-between; align-items: center; }
+        h1 { font-size: 1.5rem; color: #e94560; }
+        .header-right { display: flex; gap: 1rem; align-items: center; }
+        select, button { background: #0f3460; border: 1px solid #e94560; color: #eee; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; }
+        select:focus, button:focus { outline: none; border-color: #e94560; box-shadow: 0 0 0 2px rgba(233, 69, 96, 0.3); }
+        button:hover { background: #e94560; color: #1a1a2e; }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+        
+        main { flex: 1; display: flex; overflow: hidden; }
+        
+        .sidebar { width: 280px; background: #16213e; border-right: 1px solid #0f3460; padding: 1rem; overflow-y: auto; display: flex; flex-direction: column; gap: 1.5rem; }
+        .sidebar h3 { font-size: 0.85rem; text-transform: uppercase; color: #e94560; letter-spacing: 0.05em; margin-bottom: 0.5rem; }
+        .session-list { display: flex; flex-direction: column; gap: 0.5rem; }
+        .session-item { background: #0f3460; padding: 0.75rem; border-radius: 6px; cursor: pointer; transition: all 0.2s; border: 1px solid transparent; }
+        .session-item:hover { border-color: #e94560; }
+        .session-item.active { border-color: #e94560; background: #1a1a2e; }
+        .session-name { font-weight: 600; font-size: 0.9rem; }
+        .session-meta { font-size: 0.75rem; color: #888; margin-top: 0.25rem; }
+        .btn-new-session { width: 100%; }
+        
+        .skills-list, .tools-list { display: flex; flex-direction: column; gap: 0.25rem; font-size: 0.8rem; }
+        .skill-item { background: #0f3460; padding: 0.5rem; border-radius: 4px; }
+        .skill-name { font-weight: 600; }
+        .skill-desc { color: #888; font-size: 0.75rem; }
+        
+        .chat-area { flex: 1; display: flex; flex-direction: column; padding: 1rem; overflow: hidden; }
+        .messages { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 1rem; padding: 0.5rem; }
+        .message { display: flex; gap: 0.75rem; max-width: 85%; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .message.user { align-self: flex-end; flex-direction: row-reverse; }
+        .message.assistant { align-self: flex-start; }
+        .message-avatar { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; }
+        .message.user .message-avatar { background: #e94560; }
+        .message.assistant .message-avatar { background: #0f3460; }
+        .message-content { background: #16213e; padding: 0.75rem 1rem; border-radius: 12px; border: 1px solid #0f3460; line-height: 1.5; white-space: pre-wrap; }
+        .message.user .message-content { background: #0f3460; border-radius: 12px 12px 0 12px; }
+        .message.assistant .message-content { border-radius: 12px 12px 12px 0; }
+        .message-tool { background: #1a1a2e; border-left: 3px solid #e94560; padding: 0.5rem; font-size: 0.8rem; font-family: monospace; margin-top: 0.5rem; }
+        
+        .input-area { padding: 1rem; background: #16213e; border-top: 1px solid #0f3460; }
+        .input-wrapper { display: flex; gap: 0.5rem; max-width: 900px; margin: 0 auto; }
+        textarea { flex: 1; background: #0f3460; border: 1px solid #333; color: #eee; padding: 0.75rem 1rem; border-radius: 8px; resize: none; min-height: 50px; max-height: 150px; font-family: inherit; font-size: 1rem; line-height: 1.5; }
+        textarea:focus { outline: none; border-color: #e94560; }
+        .send-btn { align-self: flex-end; padding: 0.75rem 1.5rem; }
+        
+        .status-bar { background: #16213e; padding: 0.5rem 2rem; border-top: 1px solid #0f3460; font-size: 0.8rem; color: #888; display: flex; justify-content: space-between; }
+        .status-indicator { display: flex; align-items: center; gap: 0.5rem; }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #4ade80; }
+        .status-dot.disconnected { background: #f87171; }
+        
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; align-items: center; justify-content: center; z-index: 100; }
+        .modal.active { display: flex; }
+        .modal-content { background: #16213e; padding: 2rem; border-radius: 12px; border: 1px solid #0f3460; max-width: 400px; width: 90%; }
+        .modal h2 { margin-bottom: 1rem; color: #e94560; }
+        .modal input { width: 100%; background: #0f3460; border: 1px solid #333; color: #eee; padding: 0.75rem; border-radius: 6px; margin-bottom: 1rem; }
+        .modal-actions { display: flex; gap: 0.5rem; justify-content: flex-end; }
+        
+        .typing-indicator { display: flex; gap: 4px; padding: 0.5rem; }
+        .typing-indicator span { width: 8px; height: 8px; border-radius: 50%; background: #e94560; animation: bounce 1.4s infinite ease-in-out both; }
+        .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
+        .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🌙 Moon AI Agent</h1>
+        <div class="header-right">
+            <select id="agent-select">
+                <option value="assistant">💬 Assistant</option>
+                <option value="researcher">🔬 Researcher</option>
+                <option value="coder">💻 Coder</option>
+            </select>
+            <button id="btn-new-session" class="btn-new-session">+ New Session</button>
+        </div>
+    </header>
+    
+    <main>
+        <aside class="sidebar">
+            <div>
+                <h3>Sessions</h3>
+                <div class="session-list" id="session-list"></div>
+                <button id="btn-new-session-sidebar" class="btn-new-session">+ New Session</button>
+            </div>
+            <div>
+                <h3>Loaded Skills</h3>
+                <div class="skills-list" id="skills-list"></div>
+            </div>
+            <div>
+                <h3>Available Tools</h3>
+                <div class="tools-list" id="tools-list"></div>
+            </div>
+        </aside>
+        
+        <section class="chat-area">
+            <div class="messages" id="messages"></div>
+            
+            <div class="input-area">
+                <div class="input-wrapper">
+                    <textarea id="message-input" placeholder="Type your message... (Shift+Enter for new line)" rows="1"></textarea>
+                    <button class="send-btn" id="send-btn">Send</button>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <footer class="status-bar">
+        <div class="status-indicator">
+            <span class="status-dot" id="status-dot"></span>
+            <span id="status-text">Connecting...</span>
+        </div>
+        <div id="session-info">No session</div>
+    </footer>
+    
+    <div class="modal" id="new-session-modal">
+        <div class="modal-content">
+            <h2>New Session</h2>
+            <input type="text" id="new-session-name" placeholder="Session name (optional)">
+            <div class="modal-actions">
+                <button id="modal-cancel">Cancel</button>
+                <button id="modal-confirm">Create</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // State
+        let ws = null;
+        let currentSessionId = null;
+        let sessions = {};
+        let reconnectAttempts = 0;
+        const maxReconnectAttempts = 5;
+        
+        // DOM elements
+        const messagesEl = document.getElementById('messages');
+        const messageInput = document.getElementById('message-input');
+        const sendBtn = document.getElementById('send-btn');
+        const sessionListEl = document.getElementById('session-list');
+        const skillsListEl = document.getElementById('skills-list');
+        const toolsListEl = document.getElementById('tools-list');
+        const agentSelect = document.getElementById('agent-select');
+        const statusDot = document.getElementById('status-dot');
+        const statusText = document.getElementById('status-text');
+        const sessionInfoEl = document.getElementById('session-info');
+        const newSessionModal = document.getElementById('new-session-modal');
+        const newSessionName = document.getElementById('new-session-name');
+        const modalCancel = document.getElementById('modal-cancel');
+        const modalConfirm = document.getElementById('modal-confirm');
+        
+        // Auto-resize textarea
+        messageInput.addEventListener('input', () => {
+            messageInput.style.height = 'auto';
+            messageInput.style.height = Math.min(messageInput.scrollHeight, 150) + 'px';
+        });
+        
+        // Send message on Enter (not Shift+Enter)
+        messageInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+        
+        sendBtn.addEventListener('click', sendMessage);
+        agentSelect.addEventListener('change', switchAgent);
+        
+        document.getElementById('btn-new-session').addEventListener('click', () => openModal());
+        document.getElementById('btn-new-session-sidebar').addEventListener('click', () => openModal());
+        modalCancel.addEventListener('click', closeModal);
+        modalConfirm.addEventListener('click', createSession);
+        newSessionModal.addEventListener('click', (e) => { if (e.target === newSessionModal) closeModal(); });
+        
+        // Connect WebSocket
+        function connect(sessionId) {
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsUrl = `${protocol}//${window.location.host}/ws/${sessionId}`;
+            
+            ws = new WebSocket(wsUrl);
+            
+            ws.onopen = () => {
+                console.log('WebSocket connected');
+                statusDot.classList.remove('disconnected');
+                statusText.textContent = 'Connected';
+                reconnectAttempts = 0;
+                loadSessions();
+                loadSkills();
+                loadTools();
+            };
+            
+            ws.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                handleWebSocketMessage(data);
+            };
+            
+            ws.onclose = () => {
+                console.log('WebSocket disconnected');
+                statusDot.classList.add('disconnected');
+                statusText.textContent = 'Disconnected';
+                attemptReconnect(sessionId);
+            };
+            
+            ws.onerror = (error) => {
+                console.error('WebSocket error:', error);
+            };
+        }
+        
+        function attemptReconnect(sessionId) {
+            if (reconnectAttempts < maxReconnectAttempts) {
+                reconnectAttempts++;
+                statusText.textContent = `Reconnecting... (${reconnectAttempts}/${maxReconnectAttempts})`;
+                setTimeout(() => connect(sessionId), 1000 * reconnectAttempts);
+            } else {
+                statusText.textContent = 'Connection failed';
+            }
+        }
+        
+        function handleWebSocketMessage(data) {
+            switch (data.type) {
+                case 'welcome':
+                    currentSessionId = data.session_id;
+                    updateSessionInfo(data.session_id, data.agent_type);
+                    break;
+                case 'message':
+                    addMessage(data.role, data.content);
+                    break;
+                case 'agent_switched':
+                    updateSessionInfo(currentSessionId, data.agent_type);
+                    agentSelect.value = data.agent_type;
+                    break;
+            }
+        }
+        
+        function sendMessage() {
+            const content = messageInput.value.trim();
+            if (!content || !ws || ws.readyState !== WebSocket.OPEN) return;
+            
+            messageInput.value = '';
+            messageInput.style.height = 'auto';
+            
+            // Add user message immediately
+            addMessage('user', content);
+            
+            // Send via WebSocket
+            ws.send(JSON.stringify({
+                type: 'message',
+                content: content
+            }));
+            
+            // Show typing indicator
+            showTypingIndicator();
+        }
+        
+        function addMessage(role, content) {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `message ${role}`;
+            
+            const avatar = document.createElement('div');
+            avatar.className = 'message-avatar';
+            avatar.textContent = role === 'user' ? '👤' : '🤖';
+            
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content';
+            contentDiv.textContent = content;
+            
+            msgDiv.appendChild(avatar);
+            msgDiv.appendChild(contentDiv);
+            messagesEl.appendChild(msgDiv);
+            messagesEl.scrollTop = messagesEl.scrollHeight;
+            
+            // Remove typing indicator if present
+            const typing = document.querySelector('.typing-indicator');
+            if (typing) typing.remove();
+        }
+        
+        function showTypingIndicator() {
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'message assistant typing-indicator';
+            typingDiv.innerHTML = '<span></span><span></span><span></span>';
+            messagesEl.appendChild(typingDiv);
+            messagesEl.scrollTop = messagesEl.scrollHeight;
+        }
+        
+        function switchAgent() {
+            if (!ws || ws.readyState !== WebSocket.OPEN || !currentSessionId) return;
+            ws.send(JSON.stringify({
+                type: 'switch_agent',
+                agent_type: agentSelect.value
+            }));
+        }
+        
+        async function loadSessions() {
+            try {
+                const res = await fetch('/sessions');
+                const data = await res.json();
+                sessions = {};
+                data.forEach(s => sessions[s.session_id] = s);
+                renderSessionList();
+            } catch (e) {
+                console.error('Failed to load sessions:', e);
+            }
+        }
+        
+        function renderSessionList() {
+            sessionListEl.innerHTML = '';
+            Object.values(sessions).forEach(session => {
+                const div = document.createElement('div');
+                div.className = `session-item ${session.session_id === currentSessionId ? 'active' : ''}`;
+                div.innerHTML = `
+                    <div class="session-name">${session.agent_type}</div>
+                    <div class="session-meta">${session.message_count} messages • ${new Date(session.created_at).toLocaleTimeString()}</div>
+                `;
+                div.addEventListener('click', () => switchSession(session.session_id));
+                sessionListEl.appendChild(div);
+            });
+        }
+        
+        function switchSession(sessionId) {
+            if (sessionId === currentSessionId) return;
+            currentSessionId = sessionId;
+            connect(sessionId);
+            messagesEl.innerHTML = '';
+            renderSessionList();
+        }
+        
+        function openModal() {
+            newSessionName.value = '';
+            newSessionModal.classList.add('active');
+            newSessionName.focus();
+        }
+        
+        function closeModal() {
+            newSessionModal.classList.remove('active');
+        }
+        
+        async function createSession() {
+            closeModal();
+            const sessionId = 'session-' + Date.now();
+            connect(sessionId);
+        }
+        
+        async function loadSkills() {
+            try {
+                const res = await fetch('/skills');
+                const data = await res.json();
+                skillsListEl.innerHTML = '';
+                data.skills.forEach(skill => {
+                    const div = document.createElement('div');
+                    div.className = 'skill-item';
+                    div.innerHTML = `
+                        <div class="skill-name">${skill.name} v${skill.version}</div>
+                        <div class="skill-desc">${skill.description}</div>
+                    `;
+                    skillsListEl.appendChild(div);
+                });
+            } catch (e) {
+                console.error('Failed to load skills:', e);
+            }
+        }
+        
+        async function loadTools() {
+            try {
+                const res = await fetch('/tools');
+                const data = await res.json();
+                toolsListEl.innerHTML = '';
+                data.tools.forEach(tool => {
+                    const div = document.createElement('div');
+                    div.className = 'skill-item';
+                    div.innerHTML = `
+                        <div class="skill-name">${tool.name}</div>
+                        <div class="skill-desc">${tool.description}</div>
+                    `;
+                    toolsListEl.appendChild(div);
+                });
+            } catch (e) {
+                console.error('Failed to load tools:', e);
+            }
+        }
+        
+        function updateSessionInfo(sessionId, agentType) {
+            sessionInfoEl.textContent = `${agentType} • ${sessionId.slice(0, 8)}...`;
+            renderSessionList();
+        }
+        
+        // Initialize
+        const initialSessionId = 'session-' + Date.now();
+        connect(initialSessionId);
+    </script>
+</body>
+</html>
