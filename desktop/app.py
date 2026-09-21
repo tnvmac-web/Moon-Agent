@@ -1,12 +1,13 @@
 """
 Desktop app using PyWebView - wraps the web UI in a native window.
 """
-import os
+
 import sys
 import threading
 import time
-import webview
 from pathlib import Path
+
+import webview
 
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -33,7 +34,7 @@ def create_desktop_app():
     time.sleep(2)
 
     # Create webview window
-    window = webview.create_window(
+    webview.create_window(
         title=settings.settings.desktop.title,
         url=f"http://{settings.settings.web.host}:{settings.settings.web.port}",
         width=settings.settings.desktop.width,

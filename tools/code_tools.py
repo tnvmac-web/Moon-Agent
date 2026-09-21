@@ -1,27 +1,28 @@
 """
 Code execution tools for agents
 """
+
+import os
 import subprocess
 import sys
-import os
 import tempfile
-from typing import Dict, Any, List
+from typing import Any
 
 
 def run_python(code: str, timeout: int = 30) -> str:
     """Execute Python code and return output"""
     try:
         # Create a temporary file
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
             f.write(code)
             temp_path = f.name
-        
+
         try:
             result = subprocess.run(
                 [sys.executable, temp_path],
                 capture_output=True,
                 text=True,
-                timeout=timeout
+                timeout=timeout,
             )
             output = result.stdout
             if result.stderr:
@@ -34,7 +35,7 @@ def run_python(code: str, timeout: int = 30) -> str:
     except subprocess.TimeoutExpired:
         return f"Error: Code execution timed out after {timeout} seconds"
     except Exception as e:
-        return f"Error executing code: {str(e)}"
+        return f"Error executing code: {e!s}"
 
 
 def run_shell(command: str, timeout: int = 30, cwd: str = None) -> str:
@@ -46,7 +47,7 @@ def run_shell(command: str, timeout: int = 30, cwd: str = None) -> str:
             capture_output=True,
             text=True,
             timeout=timeout,
-            cwd=cwd
+            cwd=cwd,
         )
         output = result.stdout
         if result.stderr:
@@ -57,7 +58,7 @@ def run_shell(command: str, timeout: int = 30, cwd: str = None) -> str:
     except subprocess.TimeoutExpired:
         return f"Error: Command timed out after {timeout} seconds"
     except Exception as e:
-        return f"Error executing command: {str(e)}"
+        return f"Error executing command: {e!s}"
 
 
 def install_package(package: str) -> str:
@@ -65,7 +66,7 @@ def install_package(package: str) -> str:
     return run_shell(f"{sys.executable} -m pip install {package}")
 
 
-def get_code_tools() -> List[Dict[str, Any]]:
+def get_code_tools() -> list[dict[str, Any]]:
     """Get all code tools as a list of tool definitions"""
     return [
         {
@@ -74,25 +75,38 @@ def get_code_tools() -> List[Dict[str, Any]]:
             "function": run_python,
             "parameters": {
                 "code": {"type": "string", "description": "Python code to execute"},
-                "timeout": {"type": "integer", "description": "Timeout in seconds", "default": 30}
-            }
+                "timeout": {
+                    "type": "integer",
+                    "description": "Timeout in seconds",
+                    "default": 30,
+                },
+            },
         },
         {
             "name": "run_shell",
             "description": "Execute a shell command",
             "function": run_shell,
             "parameters": {
-                "command": {"type": "string", "description": "Shell command to execute"},
-                "timeout": {"type": "integer", "description": "Timeout in seconds", "default": 30},
-                "cwd": {"type": "string", "description": "Working directory", "default": "."}
-            }
+                "command": {
+                    "type": "string",
+                    "description": "Shell command to execute",
+                },
+                "timeout": {
+                    "type": "integer",
+                    "description": "Timeout in seconds",
+                    "default": 30,
+                },
+                "cwd": {
+                    "type": "string",
+                    "description": "Working directory",
+                    "default": ".",
+                },
+            },
         },
         {
             "name": "install_package",
             "description": "Install a Python package using pip",
             "function": install_package,
-            "parameters": {
-                "package": {"type": "string", "description": "Package name to install"}
-            }
-        }
+            "parameters": {"package": {"type": "string", "description": "Package name to install"}},
+        },
     ]

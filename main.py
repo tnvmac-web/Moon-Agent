@@ -2,16 +2,16 @@
 """
 Main entry point for Moon AI Agent
 """
-import sys
+
 import os
-from typing import Optional
+import sys
 
 # Add project root to path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from models.local_llm import create_llm, LocalLLM
-from agents.specialized import create_agent, create_researcher_agent, create_coder_agent, create_assistant_agent
 from agents.base_agent import BaseAgent
+from agents.specialized import create_agent
+from models.local_llm import create_llm
 
 
 def print_banner():
@@ -62,7 +62,7 @@ def run_interactive(agent: BaseAgent):
     while True:
         try:
             user_input = input("You: ").strip()
-            if user_input.lower() in ('exit', 'quit', 'q'):
+            if user_input.lower() in ("exit", "quit", "q"):
                 print("Goodbye!")
                 break
             if not user_input:
@@ -83,8 +83,17 @@ def main():
     import argparse
 
     parser = argparse.ArgumentParser(description="Moon AI Agent", add_help=False)
-    parser.add_argument("agent_type", nargs="?", default="assistant", choices=["researcher", "coder", "assistant"])
-    parser.add_argument("--backend", default="auto", choices=["ollama", "openai-compatible", "nvidia-nim", "mock", "auto"])
+    parser.add_argument(
+        "agent_type",
+        nargs="?",
+        default="assistant",
+        choices=["researcher", "coder", "assistant"],
+    )
+    parser.add_argument(
+        "--backend",
+        default="auto",
+        choices=["ollama", "openai-compatible", "nvidia-nim", "mock", "auto"],
+    )
     parser.add_argument("--model", default=None)
     parser.add_argument("--task", default=None)
     parser.add_argument("--help", action="store_true")

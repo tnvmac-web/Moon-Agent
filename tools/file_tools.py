@@ -90,9 +90,7 @@ def get_file_tools() -> list[dict[str, Any]]:
             "name": "read_file",
             "description": "Read the contents of a file",
             "function": read_file,
-            "parameters": {
-                "path": {"type": "string", "description": "Path to the file"}
-            },
+            "parameters": {"path": {"type": "string", "description": "Path to the file"}},
         },
         {
             "name": "write_file",
@@ -118,9 +116,7 @@ def get_file_tools() -> list[dict[str, Any]]:
             "name": "delete_file",
             "description": "Delete a file",
             "function": delete_file,
-            "parameters": {
-                "path": {"type": "string", "description": "Path to the file"}
-            },
+            "parameters": {"path": {"type": "string", "description": "Path to the file"}},
         },
         {
             "name": "create_directory",
@@ -138,9 +134,7 @@ def get_file_tools() -> list[dict[str, Any]]:
             "name": "read_json",
             "description": "Read and parse a JSON file",
             "function": read_json,
-            "parameters": {
-                "path": {"type": "string", "description": "Path to the JSON file"}
-            },
+            "parameters": {"path": {"type": "string", "description": "Path to the JSON file"}},
         },
         {
             "name": "write_json",

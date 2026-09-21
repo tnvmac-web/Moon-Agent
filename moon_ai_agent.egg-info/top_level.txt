@@ -3,10 +3,12 @@ commands
 config
 data
 desktop
+dist
 logs
 memory
 models
 skills
 terminal
+tests
 tools
 web

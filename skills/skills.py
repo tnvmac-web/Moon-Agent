@@ -107,9 +107,7 @@ class SkillManager:
         self.config = config or {}
         self.skills: dict[str, Skill] = {}
         self.manifests: dict[str, SkillManifest] = {}
-        self._tool_registry: dict[str, dict[str, Any]] = (
-            {}
-        )  # tool_name -> {skill_name, tool_info}
+        self._tool_registry: dict[str, dict[str, Any]] = {}  # tool_name -> {skill_name, tool_info}
         self._event_handlers: dict[str, list[Callable]] = {}
 
         self.skills_dir.mkdir(parents=True, exist_ok=True)
@@ -162,9 +160,7 @@ class SkillManager:
                 logger.warning(f"No __init__.py in skill: {skill_path}")
                 return None
 
-            spec = importlib.util.spec_from_file_location(
-                f"skill_{skill_path.name}", module_path
-            )
+            spec = importlib.util.spec_from_file_location(f"skill_{skill_path.name}", module_path)
             module = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(module)
 
@@ -173,7 +169,7 @@ class SkillManager:
             skill_factory = None
 
             # Look for class inheriting from Skill
-            for name, obj in inspect.getmembers(module):
+            for _name, obj in inspect.getmembers(module):
                 if inspect.isclass(obj) and issubclass(obj, Skill) and obj != Skill:
                     skill_class = obj
                     break
@@ -430,9 +426,7 @@ class FileOperationsSkill(Skill):
     def list_files(self, path: str = ".") -> str:
         try:
             files = list(Path(path).iterdir())
-            return "\n".join(
-                f"{'[DIR]' if f.is_dir() else '[FILE]'} {f.name}" for f in files
-            )
+            return "\n".join(f"{'[DIR]' if f.is_dir() else '[FILE]'} {f.name}" for f in files)
         except Exception as e:
             return f"Error: {e}"
 
@@ -493,9 +487,7 @@ class WebSearchSkill(Skill):
             parser.feed(response.text)
             results = parser.results[:max_results]
             return (
-                "\n".join(f"{i+1}. {r}" for i, r in enumerate(results))
-                if results
-                else "No results"
+                "\n".join(f"{i+1}. {r}" for i, r in enumerate(results)) if results else "No results"
             )
         except Exception as e:
             return f"Search error: {e}"
